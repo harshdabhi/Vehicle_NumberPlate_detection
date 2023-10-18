@@ -106,6 +106,7 @@ def format_license(text):
 
 
 def read_license_plate(license_plate_crop):
+
     """
     Read the license plate text from the given cropped image.
 
@@ -118,15 +119,20 @@ def read_license_plate(license_plate_crop):
 
     detections = reader.readtext(license_plate_crop)
 
+    temp=''
+    score_final=[]
     for detection in detections:
         bbox, text, score = detection
 
         text = text.upper().replace(' ', '')
+        temp=temp+f'{text} '
+        score_final.append(score)
+    
+    return temp, score_final
 
-        if license_complies_format(text):
-            return format_license(text), score
+    #     # if license_complies_format(text):
+    #     #     return format_license(text), score
 
-    return None, None
 
 
 def get_car(license_plate, vehicle_track_ids):
