@@ -70,7 +70,7 @@ while ret:
         # break
 
         ######################################################################
-       
+    
 
 
             xcar1, ycar1, xcar2, ycar2, car_id = get_car(license_plate, vehicle_tracking)

@@ -1,5 +1,6 @@
 import csv
 import time
+import os
 
 # Initialize a buffer to store the results
 buffer = []
@@ -10,8 +11,6 @@ max_buffer_size = 1000
 # Set the interval at which to flush the buffer to the file (in seconds)
 flush_interval = 10
 
-# Set the output file path
-output_path = 'results.csv'
 
 # Start a timer to keep track of the last flush
 last_flush_time = time.time()
@@ -34,9 +33,10 @@ def add_result_to_buffer(result):
 
 def flush_buffer():
     # Open the file in append mode
-    with open(output_path, 'a', newline='') as f:
+    os.makedirs('./results', exist_ok=True)
+    with open(f'./results/result_{time.strftime('%Y-%m-%d__%H_%M_%S')}.csv', 'a', newline='') as f:
         # Create a CSV writer
-        writer = csv.writer(f)
+        writer = csv.DictWriter(f,fieldnames=)
         
         # Write each result in the buffer to the file
         for result in buffer:
