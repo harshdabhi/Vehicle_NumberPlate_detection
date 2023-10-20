@@ -160,4 +160,5 @@ def get_car(license_plate, vehicle_track_ids):
     if foundIt:
         return vehicle_track_ids[car_indx]
 
-    return -1, -1, -1, -1, -1
+    else:
+        return -1, -1, -1, -1, -1

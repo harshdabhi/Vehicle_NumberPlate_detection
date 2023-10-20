@@ -7,12 +7,51 @@ from utils import get_car,read_license_plate
 import numpy as np
 import tempfile
 
+st.set_page_config(
+    page_title="Object Detection using YOLOv8",  # Setting page title
+    page_icon="🤖",     # Setting page icon
+    layout="wide",      # Setting layout to wide
+    initial_sidebar_state="expanded",
+        # Expanding sidebar by default
+)
+
 def task():
+    '''
+	This function is responsible for running the main program for automatic license plate detection. 
+    It starts by configuring the Streamlit interface, including the title and settings sidebar. 
+    It allows the user to adjust the confidence thresholds for vehicle detection and license plate detection, enable GPU usage, specify the vehicles to track, and upload a video file for tracking. 
+    It then displays buttons to start, stop, and download the video, as well as an empty image container for displaying the frames.
+
+	The function then installs the necessary libraries and dependencies.
+    It loads the trained models for vehicle detection, license plate detection, and vehicle tracking.
+    It opens the video file specified by the user or uses the default video file.
+    It initializes variables for storing the detection results and the current frame number.
+    It loops through each frame of the video, performing the following steps:
+
+	1. Detecting vehicles and obtaining their bounding boxes.
+	2. Filtering out the vehicles based on the specified vehicle classes.
+	3. Tracking the vehicles using the SORT algorithm.
+	4. Detecting license plates and obtaining their bounding boxes.
+	5. Processing the license plates and extracting the license plate numbers.
+	6. Visualizing the detection results by drawing bounding boxes on the frame.
+	7. Storing the detection results in a dictionary.
+
+	The function continues to process each frame until the end of the video or until the user clicks the stop button. Finally, it releases the video and cleans up any remaining resources.
+
+	Parameters:
+	None
+
+	Returns:
+	None
+	'''
 
 ############################# Streamlit configuration starts here ##########################################################
+
+    
     st.title('Automatic license plate detection ')
     st.markdown('_____')   
 
+###################### setting up sidebar in streamlit ######################
 
     st.sidebar.title('Settings')
 
@@ -29,17 +68,22 @@ def task():
 
     gpu=st.sidebar.checkbox('Enable GPU')
 
+###################### getting values for vehicle class id to track ######################
+
+ 
     class_enable=st.sidebar.checkbox('Specify Vehicle to track')
-    name=['car','truck','bus','motorcycle']
-    class_id=[]
+
+    name=['auto rickshaw','bus','car','motorbike','truck']
+
+    classes_input=[]
     if class_enable:
-        classes=st.sidebar.multiselect('Select the custom names',list(name),default=['car'])
+        classes=st.sidebar.multiselect('Select the custom names',name,default=['car'])
         for each in classes:
-            class_id.append(name.index(each))
+            classes_input.append(name.index(each))
 
-    st.sidebar.markdown('_____')    
-
+    st.sidebar.markdown('_____')
     
+###################### getting video inputs from user ######################
 
     video_input=st.sidebar.file_uploader('Upload file with video for tracking', type=['mp4'])
     if video_input is not None:
@@ -49,9 +93,6 @@ def task():
             video_path = temp_file.name
             st.sidebar.video(video_input)
 
-       
-
-    
 
 
     a,b,c=st.columns([0.3,0.3,0.4])
@@ -76,7 +117,8 @@ def task():
 
     #loading Trained Model for vehicle detection/plate detection/vehicle tracking
     if start:
-        vehicle_detect_model=YOLO('./vehicle_detection/models/yolov8n.pt')
+        st.cache_data.clear()
+        vehicle_detect_model=YOLO('./vehicle_detection/models/car_model.pt')
 
         number_plate_detect_model=YOLO('./number_plate_detection/models/best.pt')
 
@@ -84,13 +126,14 @@ def task():
 
         #loading video file (mention path) / real time mention (0 in cv2.VideoCapture)
         time.sleep(5)
-
         # video=cv2.VideoCapture('./videos/sample3.mp4')
         video=cv2.VideoCapture(video_path)
         results = {}
         ret=True
         frame_no=0
+        #vehicle_classid=classes_input
         vehicle_classid=[0,1,2,3,4]
+
 
         while ret:
             ret,frame=video.read()
@@ -162,19 +205,9 @@ def task():
                         cv2.rectangle(frame,(int(x1),int(y1)),(int(x2),int(y2)),(100,255,100),thickness=5)
                         cv2.rectangle(frame,(int(xcar1),int(ycar1)),(int(xcar2),int(ycar2)),(100,255,100),thickness=5)
                         #cv2.imshow('test',frame)
-                        # frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                        show_img.image(frame,channels='BGR')
+                        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                        show_img.image(frame)
         
-        ############# To stop the program ###################
-                        if stop:
-                            cv2.waitKey(0)
-                            cv2.destroyAllWindows()
-                            video.release()
-                            break
-
-                    
-    ########################################################################################################################
-
 
                         # if license_plate_text_score !=[]:
                         results[frame_no][car_id] = {'car': {'bbox': [xcar1, ycar1, xcar2, ycar2]},
@@ -182,12 +215,22 @@ def task():
                                                                         'text': license_plate_text,
                                                                         'bbox_score': score,
                                                                         'text_score': license_plate_text_score}}
-                        
+
             
                 cv2.waitKey(1)
                 
 
                 frame_no+=1
+    ############# To stop the program ###################
+            if stop:
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+                video.release()
+                break
+
+                    
+    ###############################################################################################################
+                        
 
         cv2.destroyAllWindows()
         video.release()
