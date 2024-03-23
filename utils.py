@@ -149,6 +149,7 @@ def get_car(license_plate, vehicle_track_ids):
     x1, y1, x2, y2, score, class_id = license_plate
 
     foundIt = False
+    car_indx=-1
     for j in range(len(vehicle_track_ids)):
         xcar1, ycar1, xcar2, ycar2, car_id = vehicle_track_ids[j]
 
@@ -160,4 +161,5 @@ def get_car(license_plate, vehicle_track_ids):
     if foundIt:
         return vehicle_track_ids[car_indx]
 
-    return -1, -1, -1, -1, -1
+    else:
+        return -1, -1, -1, -1, -1

@@ -1,7 +1,11 @@
 
 easyocr==1.7.0
 filterpy==1.4.5
+<<<<<<< HEAD
 #lap==0.4.0
+=======
+lap==0.4.0
+>>>>>>> 2c87c62688394a581690193c917d9f41ba10c2ab
 pillow==9.5.0
 
 # YOLOv5 requirements
@@ -54,4 +58,8 @@ setuptools>=65.5.1 # Snyk vulnerability fix
 # albumentations>=1.0.3
 # pycocotools>=2.0.6  # COCO mAP
 
+<<<<<<< HEAD
 streamlit 
+=======
+streamlit 
+>>>>>>> 2c87c62688394a581690193c917d9f41ba10c2ab
