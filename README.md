@@ -3,13 +3,16 @@
 #### Installation 
 
 Step1: Create an conda environment
-    conda create -n env python==3.10 -y
+
+        conda create -n env python==3.10 -y
 
 Step2: Install all the dependencies
-    pip install -r requirements.txt
+        
+        pip install -r requirements.txt
 
 Step3: Run the streamlit using command
-    streamlit run streamlit_visual.py
+   
+        streamlit run streamlit_visual.py
 
 
 ### The Genesis of ANPR Technology:
