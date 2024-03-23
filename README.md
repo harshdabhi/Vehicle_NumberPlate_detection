@@ -4,4 +4,4 @@
 
 
 # Error resolution for ultranalytics.utils does not found
-pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt 
+pip install -r https://raw.githubusercontent.com/ultralytics/yolov5/master/repipquirements.txt 

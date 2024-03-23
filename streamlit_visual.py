@@ -3,9 +3,11 @@ from tracking.sort import *
 from ultralytics import YOLO
 import cv2
 import matplotlib.pyplot as plt
-from utils import get_car,read_license_plate
+from utils import get_car,read_license_plate,write_csv
 import numpy as np
 import tempfile
+from model_training.train_model import model_training
+import pandas as pd
 
 def task():
 
@@ -31,11 +33,11 @@ def task():
 
     class_enable=st.sidebar.checkbox('Specify Vehicle to track')
     name=['car','truck','bus','motorcycle']
-    class_id=[]
+    classes_id=[]
     if class_enable:
         classes=st.sidebar.multiselect('Select the custom names',list(name),default=['car'])
         for each in classes:
-            class_id.append(name.index(each))
+            classes_id.append(name.index(each))
 
     st.sidebar.markdown('_____')    
 
@@ -56,6 +58,9 @@ def task():
 
     a,b,c=st.columns([0.3,0.3,0.4])
     video_inputs=('./videos/sample2.mp4')
+
+    Training=st.button('Train Model')
+
     
     with a:
         start=st.button('Start')
@@ -73,6 +78,10 @@ def task():
 ########################### main program starts from here ################################################################
 
     # Installing necessary libraries and dependencies
+    if Training:
+        p=model_training()
+        p.train_model()
+        os.rename('./model_training/yolov8.pt', './vehicle_detection/models/yolov8n.pt')
 
     #loading Trained Model for vehicle detection/plate detection/vehicle tracking
     if start:
@@ -91,13 +100,14 @@ def task():
         ret=True
         frame_no=0
         vehicle_classid=[0,1,2,3,4]
+        #vehicle_classid=classes_id
 
         while ret:
             ret,frame=video.read()
             if ret:
                 results[frame_no] = {}
                 # first detecting vehicles and getting bounding boxes
-                vehicle_detection=vehicle_detect_model(frame,conf=confidence_vehicle_input)[0]
+                vehicle_detection=vehicle_detect_model(frame,conf=confidence_vehicle_input,classes=vehicle_classid,device=0)[0]
                 detection_=[]
                 for detection in vehicle_detection.boxes.data.tolist():
                     x1, y1, x2, y2, score, class_id = detection
@@ -125,7 +135,7 @@ def task():
                 ## second detecting number plates and getting bounding boxes
 
 
-                number_plate_detection=number_plate_detect_model(frame,conf=confidence_plate_input)[0]
+                number_plate_detection=number_plate_detect_model(frame,conf=confidence_plate_input,device=0)[0]
                 for license_plate in number_plate_detection.boxes.data.tolist():    
                     x1, y1, x2, y2, score, class_id = license_plate
                 
@@ -188,7 +198,7 @@ def task():
                 
 
                 frame_no+=1
-
+        write_csv(results, './number_plate_file/test.csv')
         cv2.destroyAllWindows()
         video.release()
 
