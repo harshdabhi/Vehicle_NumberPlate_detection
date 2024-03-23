@@ -14,6 +14,9 @@ Step3: Run the streamlit using command
    
         streamlit run streamlit_visual.py
 
+### Project demonstration
+
+[![YouTube Video Preview](https://img.youtube.com/vi/MXupx_MExd8/0.jpg)](https://www.youtube.com/watch?v=MXupx_MExd8)
 
 ### The Genesis of ANPR Technology:
 
